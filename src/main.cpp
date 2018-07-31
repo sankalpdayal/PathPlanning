@@ -164,6 +164,7 @@ vector<double> getXY(double s, double d, const vector<double> &maps_s, const vec
 
 }
 
+
 int main() {
   uWS::Hub h;
 
@@ -204,12 +205,15 @@ int main() {
   int lane = 1;
   
   //define reference valocity
-  double ref_vel = 49.5;
+  double ref_vel = 0;
   
   //define max velocity
-  //double max_val = 49.5;
+  double max_vel = 49.5;
+   
+  //variable to track lange changing   
+  bool lane_change_started = false;
   
-  h.onMessage([&ref_vel,&map_waypoints_x,&map_waypoints_y,&map_waypoints_s,&map_waypoints_dx,&map_waypoints_dy,&lane](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
+  h.onMessage([&ref_vel,&map_waypoints_x,&map_waypoints_y,&map_waypoints_s,&map_waypoints_dx,&map_waypoints_dy,&lane,&max_vel,&lane_change_started](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
                      uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
     // The 4 signifies a websocket message
@@ -252,29 +256,100 @@ int main() {
 				car_s = end_path_s;
 			}
 			
-			bool too_close = false;
+			bool too_close_front = false;
+			bool too_close_left = false;
+			bool too_close_right = false;
+			
+			double car_speed_front = 0;
 			
 			//find ref_v to use
 			for (int i = 0; i < sensor_fusion.size(); i++){
-				//car in my lane
+				//to find which lane of the car
 				float d = sensor_fusion[i][6];
+				
+				//get velocity
+				double vx = sensor_fusion[i][3];
+				double vy = sensor_fusion[i][4];
+				double check_speed = sqrt(vx*vx + vy*vy);
+				
+				//get predicted s position of the car
+				double check_car_s = sensor_fusion[i][5];
+				check_car_s += ((double)prev_size * 0.02 * check_speed);//project s value is using previous points
+				
+				//check closeness in front lane
 				if (d < (2+4*lane+2) && d > (2+4*lane-2))
 				{
-					double vx = sensor_fusion[i][3];
-					double vy = sensor_fusion[i][4];
-					double check_speed = sqrt(vx*vx + vy*vy);
-					double check_car_s = sensor_fusion[i][5];
-					
-					check_car_s += ((double)prev_size * 0.02 * check_speed);//project s value is using previous points
-					
+					car_speed_front = check_speed;
 					//check s greater than a gap
 					if ((check_car_s > car_s) && ((check_car_s - car_s) < 30)){
-						ref_vel = 29.5;
+						too_close_front = true;
+					}
+				}
+				
+				//check closeness in left lane
+				if (lane < 1 && d < (2+4*(lane+1)+2) && d > (2+4*(lane+1)-2))
+				{
+					//check s greater than a gap
+					if ((check_car_s -car_s > -10 ) && ((check_car_s - car_s) < 60)){
+						too_close_left = true;
+					}
+				}
+				//check closeness in right lane
+				if (lane > 0 && d < (2+4*(lane-1)+2) && d > (2+4*(lane-1)-2))
+				{
+					//check s greater than a gap
+					if ((check_car_s -car_s > -10 ) && ((check_car_s - car_s) < 60)){
+						too_close_right = true;
 					}
 				}
 			}
 			
+			int car_state_current = 0;	
+			if (!too_close_front)
+			{
+				car_state_current = 1;// remain in current lane.
+			}
+			if (too_close_front && too_close_left &&  too_close_right)
+			{
+				car_state_current = 2;//prepare to change lane.
+			}
+			if (too_close_front && !too_close_left)
+			{
+				car_state_current = 3;//change to left lane
+			}
+			if (too_close_front && too_close_left && !too_close_right)
+			{
+				car_state_current = 4;//change to right lane
+			}
 			
+			if (car_state_current == 1 || car_state_current == 3 || car_state_current == 4){
+				if (ref_vel < max_vel)
+					ref_vel += 0.224
+			}
+			
+			if (car_state_current == 2){
+				if (ref_vel < car_speed_front)
+					ref_vel += 0.224
+				if (ref_vel > car_speed_front)
+					ref_vel -= 0.224
+			}
+			
+			if (!lane_change_started){
+				if (car_state_current == 3){
+					lane += 1
+					lane_change_started = true;
+				}
+				if (car_state_current == 4){
+					lane -= 1
+					lane_change_started = true;
+				}
+			}
+			
+			//check if car has come closer to center of new lane.
+			if (lane_change_started && car_d < (2+4*lane+1) && car_d > (2+4*lane-1))
+				lane_change_started = false;
+			
+	
 			//Create a list of widely spaced (x,y) way points
 			vector<double> ptsx;
 			vector<double> ptsy;
