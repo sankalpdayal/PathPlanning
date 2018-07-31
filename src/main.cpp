@@ -290,7 +290,7 @@ int main() {
 				if (lane < 2 && d < (2+4*(lane+1)+2) && d > (2+4*(lane+1)-2))
 				{
 					//check s greater than a gap
-					if ((check_car_s -car_s > -10 ) && ((check_car_s - car_s) < 90)){
+					if ((check_car_s -car_s > -10 ) && ((check_car_s - car_s) < 50)){
 						too_close_right = true;
 					}
 				}
@@ -301,7 +301,7 @@ int main() {
 				if (lane > 0 && d < (2+4*(lane-1)+2) && d > (2+4*(lane-1)-2))
 				{
 					//check s greater than a gap
-					if ((check_car_s -car_s > -10 ) && ((check_car_s - car_s) < 90)){
+					if ((check_car_s -car_s > -10 ) && ((check_car_s - car_s) < 50)){
 						too_close_left = true;
 					}
 				}
