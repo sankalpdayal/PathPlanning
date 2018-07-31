@@ -324,23 +324,23 @@ int main() {
 			
 			if (car_state_current == 1 || car_state_current == 3 || car_state_current == 4){
 				if (ref_vel < max_vel)
-					ref_vel += 0.224
+					ref_vel += 0.224;
 			}
 			
 			if (car_state_current == 2){
 				if (ref_vel < car_speed_front)
-					ref_vel += 0.224
+					ref_vel += 0.224;
 				if (ref_vel > car_speed_front)
-					ref_vel -= 0.224
+					ref_vel -= 0.224;
 			}
 			
 			if (!lane_change_started){
 				if (car_state_current == 3){
-					lane += 1
+					lane += 1;
 					lane_change_started = true;
 				}
 				if (car_state_current == 4){
-					lane -= 1
+					lane -= 1;
 					lane_change_started = true;
 				}
 			}
