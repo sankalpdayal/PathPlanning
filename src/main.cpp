@@ -268,7 +268,7 @@ int main() {
 					check_car_s += ((double)prev_size * 0.02 * check_speed);//project s value is using previous points
 					
 					//check s greater than a gap
-					if ((check_car_s > check_car_s) && ((check_car_s - check_car_s) > 30)){
+					if ((check_car_s > check_car_s) && ((check_car_s - check_car_s) < 30)){
 						ref_vel = 29.5;
 					}
 				}
