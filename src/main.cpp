@@ -207,9 +207,9 @@ int main() {
   double ref_val = 49.5;
   
   //define max velocity
-  double max_val = 49.5;
+  //double max_val = 49.5;
   
-  h.onMessage([&map_waypoints_x,&map_waypoints_y,&map_waypoints_s,&map_waypoints_dx,&map_waypoints_dy](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
+  h.onMessage([&map_waypoints_x,&map_waypoints_y,&map_waypoints_s,&map_waypoints_dx,&map_waypoints_dy,&ref_val,&lane](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
                      uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
     // The 4 signifies a websocket message
@@ -301,8 +301,8 @@ int main() {
 				ref_x = previous_path_x[prev_size-1];
 				ref_y = previous_path_y[prev_size-1];
 				
-				ref_x_prev = previous_path_x[prev_size-2];
-				ref_y_prev = previous_path_y[prev_size-2];
+				double ref_x_prev = previous_path_x[prev_size-2];
+				double ref_y_prev = previous_path_y[prev_size-2];
 				
 				ref_yaw = atan2(ref_y - ref_y_prev, ref_x - ref_x_prev)
 				
