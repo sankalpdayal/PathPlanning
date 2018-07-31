@@ -209,7 +209,7 @@ int main() {
   //define max velocity
   //double max_val = 49.5;
   
-  h.onMessage([&map_waypoints_x,&map_waypoints_y,&map_waypoints_s,&map_waypoints_dx,&map_waypoints_dy,&ref_vel,&lane](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
+  h.onMessage([&ref_vel,&map_waypoints_x,&map_waypoints_y,&map_waypoints_s,&map_waypoints_dx,&map_waypoints_dy,&lane](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
                      uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
     // The 4 signifies a websocket message
@@ -314,9 +314,9 @@ int main() {
 			}
 			
 			//In Frenet add evely spaced points for 30m
-			vector<double> next_wp0 = getXY(car_x+30, (2 + 4*lane),map_waypoints_s,map_waypoints_x,map_waypoints_y);
-			vector<double> next_wp1 = getXY(car_x+60, (2 + 4*lane),map_waypoints_s,map_waypoints_x,map_waypoints_y);
-			vector<double> next_wp2 = getXY(car_x+90, (2 + 4*lane),map_waypoints_s,map_waypoints_x,map_waypoints_y);
+			vector<double> next_wp0 = getXY(car_s+30, (2 + 4*lane),map_waypoints_s,map_waypoints_x,map_waypoints_y);
+			vector<double> next_wp1 = getXY(car_s+60, (2 + 4*lane),map_waypoints_s,map_waypoints_x,map_waypoints_y);
+			vector<double> next_wp2 = getXY(car_s+90, (2 + 4*lane),map_waypoints_s,map_waypoints_x,map_waypoints_y);
 
 			ptsx.push_back(next_wp0[0]);
 			ptsx.push_back(next_wp1[0]);
@@ -359,7 +359,7 @@ int main() {
 			
 			double x_add_on = 0;
 			//fill up the rest of path planner 
-			for (int i = 0; i<= 50-previous_path_x.size();i++){
+			for (int i = 1; i<= 50-previous_path_x.size();i++){
 				double N = (target_dist/(0.02*ref_vel/2.24));
 				double x_point = x_add_on +  target_x/N;
 				double y_point = s(x_point);
