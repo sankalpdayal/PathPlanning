@@ -286,22 +286,27 @@ int main() {
 					}
 				}
 				
-				//check closeness in left lane
-				if (lane < 1 && d < (2+4*(lane+1)+2) && d > (2+4*(lane+1)-2))
-				{
-					//check s greater than a gap
-					if ((check_car_s -car_s > -10 ) && ((check_car_s - car_s) < 60)){
-						too_close_left = true;
-					}
-				}
 				//check closeness in right lane
-				if (lane > 0 && d < (2+4*(lane-1)+2) && d > (2+4*(lane-1)-2))
+				if (lane < 2 && d < (2+4*(lane+1)+2) && d > (2+4*(lane+1)-2))
 				{
 					//check s greater than a gap
-					if ((check_car_s -car_s > -10 ) && ((check_car_s - car_s) < 60)){
+					if ((check_car_s -car_s > -10 ) && ((check_car_s - car_s) < 90)){
 						too_close_right = true;
 					}
 				}
+				if (lane == 2)
+					too_close_right = true;
+				
+				//check closeness in left lane
+				if (lane > 0 && d < (2+4*(lane-1)+2) && d > (2+4*(lane-1)-2))
+				{
+					//check s greater than a gap
+					if ((check_car_s -car_s > -10 ) && ((check_car_s - car_s) < 90)){
+						too_close_left = true;
+					}
+				}
+				if (lane == 0)
+					too_close_left = true;
 			}
 			
 			int car_state_current = 0;	
@@ -336,11 +341,11 @@ int main() {
 			
 			if (!lane_change_started){
 				if (car_state_current == 3){
-					lane += 1;
+					lane -= 1;
 					lane_change_started = true;
 				}
 				if (car_state_current == 4){
-					lane -= 1;
+					lane += 1;
 					lane_change_started = true;
 				}
 			}
