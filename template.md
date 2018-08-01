@@ -66,9 +66,13 @@ Then delta x is obtained by dividing 30 by N. Chosen x points are obtained by ad
 ## Simulation
 Following video shows how the car navigated with the final chosen parameters. 
 
-[![Results of path planning]()
+[![Results of path planning](http://img.youtube.com/vi/HiDZdMfmVDY/0.jpg)](http://www.youtube.com/watch?v=HiDZdMfmVDY)
 
-It can be observed that the car was able to remain on track thoughout the run.
+It can be observed 
+1. Car succesfully changed lanes [00:59, 01:25]
+2. Followed the car in front at its speed if there was no space to change lane. [06:22 till 06:36]
+3. The car was able to remained on track thoughout the run. [07:00]
+4. It completed the whole distance without any incident. [07:00]
 
 ## Scope of Improvement
 It is assumed that other cars will behave in usual manner. In case there is any emergency situation or a crash or a sudden stop/acceleration of other cars, the following methods may not be sufficient.
